@@ -110,9 +110,6 @@
     width: 56px;
     height: 48px; }
 
-.annotator-frame .annotator-bucket-indicator {
-  display: none; }
-
 .annotator-adder {
   all: initial;
   -webkit-animation-duration: 80ms;
@@ -483,8 +480,6 @@
       background-repeat: no-repeat;
       width: 56px;
       height: 48px; }
-  .annotator-frame .annotator-frame .annotator-bucket-indicator {
-    display: none; }
   .annotator-frame .annotator-bucket-bar {
     background: rgba(0, 0, 0, 0.08);
     pointer-events: none;
@@ -493,6 +488,7 @@
     width: 22px;
     left: -22px; }
   .annotator-frame .annotator-bucket-indicator {
+    display: none;
     box-sizing: border-box;
     background: #fff;
     border: solid 1px #d3d3d3;

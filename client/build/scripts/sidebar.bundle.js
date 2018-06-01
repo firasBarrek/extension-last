@@ -1,8 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
- * angular-translate - v2.17.0 - 2017-12-21
+ * angular-translate - v2.18.1 - 2018-05-19
  * 
- * Copyright (c) 2017 The angular-translate team, Pascal Precht; Licensed MIT
+ * Copyright (c) 2018 The angular-translate team, Pascal Precht; Licensed MIT
  */
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -473,7 +473,7 @@ function $translate($STORAGE_KEY, $windowProvider, $translateSanitizationProvide
       }
     };
 
-  var version = '2.17.0';
+  var version = '2.18.1';
 
   // tries to determine the browsers language
   var getFirstBrowserLanguage = function () {
@@ -3521,7 +3521,7 @@ angular.module('pascalprecht.translate')
  *
  * @description
  * Translates given translation id either through attribute or DOM content.
- * Internally it uses `translate` filter to translate translation id. It possible to
+ * Internally it uses `translate` filter to translate translation id. It is possible to
  * pass an optional `translate-values` object literal as string into translation id.
  *
  * @param {string=} translate namespace name which could be either string or interpolated string.
@@ -3575,7 +3575,7 @@ function translateNamespaceDirective() {
     compile: function () {
       return {
         pre: function (scope, iElement, iAttrs) {
-          scope.translateNamespace = getTranslateNamespace(scope);
+          scope.translateNamespace = _getTranslateNamespace(scope);
 
           if (scope.translateNamespace && iAttrs.translateNamespace.charAt(0) === '.') {
             scope.translateNamespace += iAttrs.translateNamespace;
@@ -3594,13 +3594,13 @@ function translateNamespaceDirective() {
  * @param scope
  * @returns {string}
  */
-function getTranslateNamespace(scope) {
+function _getTranslateNamespace(scope) {
   'use strict';
   if (scope.translateNamespace) {
     return scope.translateNamespace;
   }
   if (scope.$parent) {
-    return getTranslateNamespace(scope.$parent);
+    return _getTranslateNamespace(scope.$parent);
   }
 }
 
@@ -10682,9 +10682,10 @@ module.exports = {
 },{"../annotation-metadata":51,"../events":95,"../templates/annotation-header.html":136,"../util/account-id":169,"../util/memoize":174}],57:[function(require,module,exports){
 'use strict';
 
-AnnotationShareDialogController.$inject = ["$element", "$scope", "analytics", "session","store"];
+AnnotationShareDialogController.$inject = ["$element", "$scope", "analytics", "session", "store"];
 var angular = require('angular');
 var scopeTimeout = require('../util/scope-timeout');
+
 var annotationMetadata = require('../annotation-metadata');
 var memoize = require('../util/memoize');
 
@@ -10692,7 +10693,6 @@ var memoize = require('../util/memoize');
 function AnnotationShareDialogController($element, $scope, analytics, session, store) {
   var self = this;
   var shareLinkInput = $element.find('input')[0];
-  
 
   $scope.$watch('vm.isOpen', function (isOpen) {
     if (isOpen) {
@@ -10734,65 +10734,39 @@ function AnnotationShareDialogController($element, $scope, analytics, session, s
     }
   };
 
-  /*function getMyProfile(username, password) {
-    var xhr = new XMLHttpRequest();
-    var url = "https://plazza.orange.com/api/core/v3/people/@me";
-    //var auth = "Basic bW9oYW1lZGZpcmFzLmJhcnJla0Bzb2ZyZWNvbS5jb206RmJfMjM2NDgwOTY=";
-    xhr.open("GET", url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-    //xhr.setRequestHeader('Authorization', auth);
-    xhr.setRequestHeader('X-JCAPI-Token', 'S7xYd4UO');
-    xhr.onreadystatechange = function () {
-      if (xhr.status === 200) {
-        console.log(xhr.responseText);
-        //var json = JSON.parse(xhr.responseText);
-        //console.log('here response '+json);
-      } else {
-        console.log('not authenticated user');
-      }
-    };
-    xhr.send();
-  }*/
-
   function checkAuthenticated(callback) {
     var xhr = new XMLHttpRequest();
-    var url = "https://10.241.109.147:5000/api/getuser/"+session.state.userid;
+    var url = "https://10.241.109.147:5000/api/getuser/" + session.state.userid;
     xhr.open("GET", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
       if (xhr.status === 200 && xhr.readyState === 4) {
-          var data = JSON.parse(xhr.responseText);
-          console.log(data)
-          callback(data);
+        var data = JSON.parse(xhr.responseText);
+        console.log(data);
+        callback(data);
       } else {
-          callback('err');
+        callback('err');
       }
     };
     xhr.send();
   }
 
-  function shareDiscussion(authCode,infos) {
+  function shareDiscussion(authCode, infos) {
     var xhr = new XMLHttpRequest();
     var url = "https://plazza.orange.com/api/core/v3/contents";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("Authorization", "Basic " +authCode );
+    xhr.setRequestHeader("Authorization", "Basic " + authCode);
     xhr.setRequestHeader("X-JCAPI-Token", "S7xYd4UO");
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 201) {
         alert("Publié sur Plazza avec succés");
         window.location.reload();
       } else {
-        console.log('text err '+xhr.responseText);
+        console.log('text err ' + xhr.responseText);
       }
     };
-    var content = "<body>"+
-                  "<p><h2>"+infos.title+"</h2></p>"+
-                  "<p><b>Tags : </b>"+infos.tags+
-                  "</p>"+
-                  "<p><b>Publié sur : </b><a href="+infos.uri+" target='_blanck'>"+infos.uri+"</a></p>"+
-                  "</body>"
+    var content = "<body>" + "<p><h2>" + infos.title + "</h2></p>" + "<p><b>Tags : </b>" + infos.tags + "</p>" + "<p><b>Publié sur : </b><a href=" + infos.uri + " target='_blanck'>" + infos.uri + "</a></p>" + "</body>";
     var discussion = { "content": { "type": "text/html", "text": content },
       "subject": "Discussion depuis Annotons nos contenus",
       "type": "discussion"
@@ -10800,7 +10774,6 @@ function AnnotationShareDialogController($element, $scope, analytics, session, s
     var data = JSON.stringify(discussion);
     xhr.send(data);
   }
-
 
   this.onSharePlazza = function () {
     var uri = this.uri;
@@ -10810,15 +10783,15 @@ function AnnotationShareDialogController($element, $scope, analytics, session, s
     store.annotation.get({ id: annotation_id }).then(function (annot) {
       infos.title = annot.title;
       infos.uri = annot.uri;
-      infos.tags=[];
+      infos.tags = [];
       for (var i = 0; i < annot.tags.length; i++) {
-        infos.tags.push(" "+annot.tags[i]+" ");
+        infos.tags.push(" " + annot.tags[i] + " ");
       }
       checkAuthenticated(function (data) {
         //traitement post
-        if(data!='err'){
-          shareDiscussion(data.password,infos);
-        }else{
+        if (data != 'err') {
+          shareDiscussion(data.password, infos);
+        } else {
           console.log('error');
         }
       });
@@ -11111,26 +11084,7 @@ function updateTitle(annot) {
 function AnnotationController($document, $rootScope, $scope, $timeout, $window, $element, analytics, annotationUI, annotationMapper, drafts, flash, groups, permissions, serviceUrl, session, settings, store, streamer) {
 
   var self = this;
-
   addAnnotation(self.annotation);
-  //console.log("annotaaa " + JSON.stringify(allAnnotations));
-  //console.log("all " + allAnnotations.length);
-
-  /*if(allAnnotations.length==4){
-    console.log('annot ');
-    var ids = [{"id":"R8Zk7jygEeiPywMWZLBTAQ","group":"8ED3M8Zj"},{"id":"4Kt5jDvPEeiPywM63NYudg","group":"8ED3M8Zj"},{"id":"1XLWvjvPEeiPy98oWFnvCA","group":"8ED3M8Zj"},{"id":"Vf0JIjjmEeiPy6fxL0QTww","group":"8ED3M8Zj"},{"id":"ZALlUji3EeiPy78BYbX61Q","group":"8ED3M8Zj"},{"id":"Kfvb-jgFEeiPy09P80YaJg","group":"8ED3M8Zj"},{"id":"Aks-HjfkEeiPy3f0iZj1Tg","group":"8ED3M8Zj"},{"id":"5xjxSjfjEeiPy090VRkguQ","group":"8ED3M8Zj"},{"id":"24I1-DfjEeiPy2s6nD8ttw","group":"8ED3M8Zj"},{"id":"mOpdyjHKEeiBoRNvPQhWVA","group":"__world__"},{"id":"8YeJyjHGEeiBoVPw9qXXrQ","group":"__world__"},{"id":"uehsUDHGEeiBofONe-TNFw","group":"__world__"},{"id":"xr6jjitgEeimCiPGscVBOg","group":"8ED3M8Zj"},{"id":"iNqcvCtbEeimCj81EOMi_g","group":"__world__"},{"id":"v29sQChdEeiiuNNSLt5n-w","group":"__world__"},{"id":"TyV3VChdEeiiuCsAQXkgUw","group":"__world__"},{"id":"gLno0ChZEeidnf9d7VD2Xg","group":"__world__"},{"id":"sLngZifTEeiqFiMxTFk80w","group":"__world__"},{"id":"FSUgFifTEeiqFpMoajFfKA","group":"__world__"},{"id":"-mhR0CfSEeiqFodJ5TR41Q","group":"__world__"},{"id":"yW9CoCfSEeiqFgvyS4Wcqg","group":"__world__"},{"id":"ugP15ifREeiqFnMgy7eTbw","group":"__world__"},{"id":"mJr3iCfREeiqFm8yzywVGA","group":"__world__"},{"id":"eF_jUifREeiqFj-EMsJI-Q","group":"__world__"},{"id":"NHX2uCfREeiqFjMjfCsmrQ","group":"__world__"},{"id":"Pi4ruCfQEeiqFkO7SCCFdQ","group":"__world__"},{"id":"CtC51CfQEeiqFoeDriJSQw","group":"__world__"},{"id":"gOvajCfPEeiqFtPiEj6Ffg","group":"__world__"},{"id":"rY5tgCfOEeiqFttYpmzqeQ","group":"__world__"},{"id":"QmzesCfOEeiqFpvw0pIbGQ","group":"__world__"},{"id":"xI8FhifNEeiqFgd0bV9Rhw","group":"__world__"},{"id":"Bz9yWCfOEeiqFpsZ11B8Sg","group":"__world__"},{"id":"lWHDPifNEeiqFlc5a1aPGQ","group":"__world__"},{"id":"7fyrkCfMEeiqFp8vpcYBdg","group":"__world__"},{"id":"4s1ZPCeFEei44lu6i7J4Gw","group":"8ED3M8Zj"},{"id":"HZoKIiYWEeiXi5PEAB8Zmg","group":"__world__"},{"id":"Dh4jdiYWEeiXixvHiq0Kvg","group":"__world__"}];
-    ids.forEach(function(element){
-          store.annotation.get({ id: element.id }).then(function (annot) {
-
-        var onRejected = function onRejected(err) {
-          flash.error(err.message, 'Deleting annotation failed');
-        };
-          annotationMapper.deleteAnnotation(annot).then(function () {
-          }, onRejected);
-    });
-  })
-
-  }*/
 
   var newlyCreatedByHighlightButton;
 
@@ -11144,8 +11098,7 @@ function AnnotationController($document, $rootScope, $scope, $timeout, $window, 
 
   /** Save an annotation to the server. */
   function save(annot) {
-    //console.log("annot "+JSON.stringify(annot));
-    //console.log("all "+JSON.stringify(allAnnotations));
+    console.log("annot " + JSON.stringify(annot));
     var saved;
     var updating = !!annot.id;
 
@@ -11341,7 +11294,6 @@ function AnnotationController($document, $rootScope, $scope, $timeout, $window, 
           flash.error(err.message, 'Deleting annotation failed');
         };
         $scope.$apply(function () {
-
           annotationMapper.deleteAnnotation(self.annotation).then(function () {
             var event;
 
@@ -13036,21 +12988,22 @@ module.exports = {
 },{"../templates/selection-tabs.html":155,"../ui-constants":167,"../util/session-util":178}],76:[function(require,module,exports){
 'use strict';
 
-ShareDialogController.$inject = ["$scope", "$element", "analytics", "annotationUI","session"];
-//var VIA_PREFIX = 'https://via.hypothes.is/';
+ShareDialogController.$inject = ["$scope", "$element", "analytics", "annotationUI", "session"];
+var VIA_PREFIX = 'https://via.hypothes.is/';
 
 // @ngInject
-function ShareDialogController($scope, $element, analytics, annotationUI,session) {
+function ShareDialogController($scope, $element, analytics, annotationUI, session) {
   var self = this;
-  
+
   function updateViaLink(frames) {
     if (!frames.length) {
       self.viaPageLink = '';
       return;
     }
+
     self.viaPageLink = frames[0].uri;
-    // Check to see if we are on a via page. If so, we just return the URI.
-    /*if (frames[0].uri.indexOf(VIA_PREFIX) === 0) {
+    /* Check to see if we are on a via page. If so, we just return the URI.
+    if (frames[0].uri.indexOf(VIA_PREFIX) === 0) {
       self.viaPageLink = frames[0].uri;
     } else {
       self.viaPageLink = VIA_PREFIX + frames[0].uri;
@@ -13073,52 +13026,50 @@ function ShareDialogController($scope, $element, analytics, annotationUI,session
 
   function checkAuthenticated(callback) {
     var xhr = new XMLHttpRequest();
-    var url = "https://10.241.109.147:5000/api/getuser/"+session.state.userid;
+    var url = "https://10.241.109.147:5000/api/getuser/" + session.state.userid;
     xhr.open("GET", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
       if (xhr.status === 200 && xhr.readyState === 4) {
-          var data = JSON.parse(xhr.responseText);
-          console.log(data)
-          callback(data);
+        var data = JSON.parse(xhr.responseText);
+        console.log(data);
+        callback(data);
       } else {
-          callback('err');
+        callback('err');
       }
     };
     xhr.send();
   }
 
-
   this.onSharePlazza = function () {
 
     checkAuthenticated(function (data) {
-        console.log("checkAuthenticated "+data)
-        //traitement post
-        if(data!='err'){
+      console.log("checkAuthenticated " + data);
+      //traitement post
+      if (data != 'err') {
         var xhr = new XMLHttpRequest();
         var url = "https://plazza.orange.com/api/core/v3/contents";
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-type", "application/json");
-        xhr.setRequestHeader("Authorization", "Basic " +data.password);
+        xhr.setRequestHeader("Authorization", "Basic " + data.password);
         xhr.setRequestHeader("X-JCAPI-Token", "S7xYd4UO");
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4 && xhr.status === 201) {
-              alert("Publié sur Plazza avec succés");
-              window.location.reload();
+            alert("Publié sur Plazza avec succés");
+            window.location.reload();
           } else {
             console.log('text err ' + xhr.responseText);
           }
         };
-        var discussion = { "content": { "type": "text/html", "text": "<body><h2>Discussion de Annotons</h2>"+
-                           "<p><b>Lien de la page : </b><a href="+self.viaPageLink+" target='_blanck'>"+self.viaPageLink+"</a></p></body>" },
+        var discussion = { "content": { "type": "text/html", "text": "<body><h2>Discussion de Annotons</h2>" + "<p><b>Lien de la page : </b><a href=" + self.viaPageLink + " target='_blanck'>" + self.viaPageLink + "</a></p></body>" },
           "subject": "Discussion depuis Annotons nos contenus",
           "type": "discussion"
         };
         var data = JSON.stringify(discussion);
         xhr.send(data);
-        }else{
-          console.log('error');
-        }
+      } else {
+        console.log('error');
+      }
     });
   };
 }
@@ -16261,15 +16212,14 @@ function auth($http, $rootScope, $window, OAuthClient, apiRoutes, flash, localSt
 
   function oauthClient() {
     console.log('heeeeeeeeeere ' + JSON.stringify(settings));
-
     function triggerEvent() {
       setInterval(function () {
         document.querySelector('.triggerButton').click();
       }, 500);
     }
     if (client) {
-      triggerEvent();
       console.log('client ok ' + JSON.stringify(client));
+      triggerEvent();
       return Promise.resolve(client);
     }
 
@@ -17521,7 +17471,7 @@ var TAB_DEFAULT = uiConstants.TAB_ANNOTATIONS;
  */
 var TAB_SORTKEY_DEFAULT = {};
 TAB_SORTKEY_DEFAULT[uiConstants.TAB_ANNOTATIONS] = 'Position';
-TAB_SORTKEY_DEFAULT[uiConstants.TAB_NOTES] = 'Ancienne';
+TAB_SORTKEY_DEFAULT[uiConstants.TAB_NOTES] = 'Récente';
 TAB_SORTKEY_DEFAULT[uiConstants.TAB_ORPHANS] = 'Position';
 
 /**
@@ -19917,7 +19867,7 @@ module.exports = "<div ng-class=\"vm.threadClasses()\">\n  <div class=\"annotati
 module.exports = "<thread-list\n  on-change-collapsed=\"vm.setCollapsed(id, collapsed)\"\n  on-force-visible=\"vm.forceVisible(thread)\"\n  show-document-info=\"true\"\n  thread=\"vm.rootThread\">\n</thread-list>\n";
 
 },{}],140:[function(require,module,exports){
-module.exports = "<header class=\"annotation-header\" ng-if=\"!vm.user()\">\n  <strong>{{'vous devez être connecté pour créer des annotations.' | translate}}</strong>\n  <script src=\"./node_modules/angular-translate/dist/angular-translate.js\"></script>\n</header>\n\n<div ng-keydown=\"vm.onKeydown($event)\" class=\"all_annotation\" ng-if=\"vm.user()\">\n\n<div ng-click=\"vm.actions(vm.annotation.id)\" style=\"float:right;\"><img src=\"http://10.241.109.147/Decoupes/left-arrow.png\" style=\"width:25px;height:25px;\"/></div>\n\n  <annotation-header annotation=\"vm.annotation\"\n                     is-editing=\"vm.editing()\"\n                     is-highlight=\"vm.isHighlight()\"\n                     is-private=\"vm.state().isPrivate\"\n                     on-reply-count-click=\"vm.onReplyCountClick()\"\n                     reply-count=\"vm.replyCount\"\n                     show-document-info=\"vm.showDocumentInfo\">\n  </annotation-header>\n\n  <!-- Body -->\n\n\n  <div class=\"annotation-body form-field\">\n     <label for=\"title\" class=\"title\" ng-if=\"!vm.editing()\">{{'titre' | translate}} </label>\n      <markdown text=\"vm.state().title\"\n                read-only=\"!vm.editing()\" ng-if=\"!vm.editing()\">\n      </markdown>\n  <label for=\"title\" class=\"title\" ng-if=\"vm.editing()\">{{'titre' | translate}}</label>\n  <input class=\"form-input\" type=\"text\" name=\"title\" ng-if=\"vm.editing()\" ng-model=\"title\" on-edit-text=\"vm.setTitle(title)\" \n         ng-change=\"vm.setTitle(title)\" placeholder=\"{{vm.state().title || vm.getLastTitle()}}\" style=\"width:100%;\"/>\n</div>\n\n <!-- Tags -->\n  <div class=\"annotation-body form-field\" ng-if=\"vm.editing()\">\n  <span class=\"title\">Tags </span>\n    <tag-editor tags=\"vm.state().tags\"\n                on-edit-tags=\"vm.setTags(tags)\"></tag-editor>\n  </div>\n\n  <div class=\"annotation-body u-layout-row tags tags-read-only\"\n       ng-if=\"(vm.canCollapseBody || vm.state().tags.length) && !vm.editing()\">\n    <ul class=\"tag-list\">\n      <li class=\"tag-item\" ng-repeat=\"tag in vm.state().tags\">\n        <a ng-href=\"{{vm.tagSearchURL(tag)}}\" target=\"_blank\">{{tag}}</a>\n      </li>\n    </ul>\n    <div class=\"u-stretch\"></div>\n    <a class=\"annotation-link u-strong\" ng-show=\"vm.canCollapseBody\"\n      ng-click=\"vm.toggleCollapseBody($event)\"\n      ng-title=\"vm.collapseBody ? 'Show the full annotation text' : 'Show the first few lines only'\"\n      ng-bind=\"vm.collapseBody ? 'More' : 'Less'\"\n      h-branding=\"accentColor\"></a>\n  </div>\n  <!-- / Tags -->\n\n<!-- information annotation -->\n<div style=\"margin-top:2px;\"></div>\n <div class=\"plusInfo\" ng-click=\"vm.plusInfo(vm.annotation.id)\" style=\"float:right;\"><img src=\"http://10.241.109.147/Decoupes/points-512.png\" style=\"width:25px;height:25px;\"/></div>\n<br>\n\n\n<div class=\"infos{{vm.annotation.id}}\" style=\"display:none;\">\n\n<span ng-if=\"!vm.state().text && !vm.state().complexite && !vm.state().fraicheur && vm.state().typesContenu.length==0 \n && !vm.state().rate && !vm.editing()\" style=\"color:red;\">\n{{\"pas d'informations sur cette annotation\" | translate}}\n</span>\n\n<div style=\"display:inline-flex;\" ng-if=\"!vm.editing()\">\n  <div class=\"annotation-body form-field\">\n    <span class=\"title\" ng-if=\"vm.state().complexite || vm.editing()\">{{'complexite' | translate}}</span>\n      <markdown text=\"vm.state().complexite\"\n                read-only=\"!vm.editing()\" ng-if=\"!vm.editing()\">\n      </markdown>\n</div>\n\n  <div class=\"annotation-body form-field\" style=\"margin-left:150px;\">\n     <span class=\"title\" ng-if=\"vm.state().fraicheur || vm.editing()\">{{'fraicheur' | translate}}</span>\n      <markdown ng-if=\"!vm.editing()\" text=\"vm.state().fraicheur\"\n                read-only=\"!vm.editing()\" ng-if=\"!vm.editing()\">\n      </markdown>\n</div>\n\n</div>\n\n<div style=\"display:inline-flex;\" ng-if=\"vm.editing()\">\n  <div class=\"annotation-body form-field\" style=\"margin-right:10px;\">\n    <span class=\"title\">{{'complexite' | translate}} </span>\n  <select name=\"complexite\" ng-if=\"vm.editing()\" ng-model=\"complexite\" on-edit-text=\"vm.setComplexite(complexite)\" \n         ng-change=\"vm.setComplexite(complexite)\" class=\"form-control\">\n  <option value=\"\" disabled>{{'complexite' | translate}}</option> \n  <option ng-selected=\"{{vm.state().complexite == 'Acculturation'}}\" value=\"Acculturation\">Acculturation</option> \n  <option ng-selected=\"{{vm.state().complexite == 'Base'}}\" value=\"Base\">Base</option>\n  <option ng-selected=\"{{vm.state().complexite == 'Operationnel'}}\" value=\"Operationnel\">Opérationnel</option>\n  <option ng-selected=\"{{vm.state().complexite == 'Avance'}}\" value=\"Avance\">Avancé</option>\n</select>\n</div>\n\n  <div class=\"annotation-body form-field\">\n     <span class=\"title\">{{'fraicheur' | translate}} </span>\n<select name=\"fraicheur\" ng-if=\"vm.editing()\" ng-model=\"fraicheur\" on-edit-text=\"vm.setFraicheur(fraicheur)\" \n         ng-change=\"vm.setFraicheur(fraicheur)\" class=\"form-control\" >\n  <option value=\"\" disabled>{{'fraicheur' | translate}}</option>\n  <option ng-selected=\"{{vm.state().fraicheur == 'Anticipation'}}\" value=\"Anticipation\">Anticipation</option> \n  <option ng-selected=\"{{vm.state().fraicheur == 'Actuel'}}\" value=\"Actuel\">Actuel</option>\n  <option ng-selected=\"{{vm.state().fraicheur == 'Pas à jour'}}\" value=\"Pas à jour\">Pas à jour</option>\n  <option ng-selected=\"{{vm.state().fraicheur == 'Obsolète'}}\" value=\"Obsolète\">Obsolète</option>\n</select>\n</div>\n</div>\n\n<div style=\"display:inline-flex;\">\n\n<div class=\"annotation-body form-field\">\n<span class=\"title\" ng-if=\"vm.state().rate || vm.editing()\">{{'interet' | translate}} </span>\n\n  <div id=\"id{{vm.annotation.id}}\" class=\"rating\" ng-if=\"!vm.editing() && vm.state().rate\">\n\t<span class=\"id{{vm.annotation.id}}rating5\">☆</span><span class=\"id{{vm.annotation.id}}rating4\">☆</span><span class=\"id{{vm.annotation.id}}rating3\">☆</span><span class=\"id{{vm.annotation.id}}rating2\">☆</span><span class=\"id{{vm.annotation.id}}rating1\">☆</span>\n   </div> \n\n   <div id=\"id{{vm.annotation.id}}\" class=\"rating\" ng-if=\"vm.editing()\">\n\t<span class=\"id{{vm.annotation.id}}rating5\" ng-click=\"vm.rating(5)\">☆</span><span class=\"id{{vm.annotation.id}}rating4\" ng-click=\"vm.rating(4)\">☆</span><span class=\"id{{vm.annotation.id}}rating3\" ng-click=\"vm.rating(3)\">☆</span><span class=\"id{{vm.annotation.id}}rating2\" ng-click=\"vm.rating(2)\">☆</span><span class=\"id{{vm.annotation.id}}rating1\" ng-click=\"vm.rating(1)\">☆</span>\n   </div>\n\n</div>\n\n<div class=\"annotation-body form-field\" ng-if=\"vm.editing()\" style=\"margin-left:70px;\">\n<span class=\"title\">{{'type' | translate}} </span><br ng-if=\"vm.editing()\" />\n  <select name=\"type\" ng-if=\"vm.editing()\" ng-model=\"typeContenu\" on-edit-text=\"vm.setTypesContenu(typeContenu)\" \n         ng-change=\"vm.setTypesContenu(typeContenu)\" class=\"form-control\">\n  <option value=\"\" disabled>{{'type' | translate}}</option> \n  <option ng-selected=\"{{vm.state().typesContenu[0] == 'Formation Présentielle'}}\" value=\"Formation Présentielle\">Formation Présentielle</option> \n  <option ng-selected=\"{{vm.state().typesContenu[0] == 'E_learning'}}\" value=\"E_learning\">E_learning</option>\n  <option ng-selected=\"{{vm.state().typesContenu[0] == 'Coding Dojo'}}\" value=\"Coding Dojo\">Coding Dojo</option>\n  <option ng-selected=\"{{vm.state().typesContenu[0] == 'Tutoriel Web'}}\" value=\"Tutoriel Web\">Tutoriel Web</option>\n  <option ng-selected=\"{{vm.state().typesContenu[0] == 'Recommendation'}}\" value=\"Recommendation\">Recommendation</option>\n  <option ng-selected=\"{{vm.state().typesContenu[0] == 'Orange'}}\" value=\"Orange\">Orange</option>\n  <option ng-selected=\"{{vm.state().typesContenu[0] == 'Rex'}}\" value=\"Rex\">Rex</option>\n</select>\n</div>\n\n  <div class=\"annotation-body\"\n       ng-if=\"(vm.canCollapseBody || vm.state().typesContenu.length) && !vm.editing()\" style=\"margin-left:124px;\">\n  <span class=\"title\">{{'type' | translate}} </span>\n\n      <markdown text=\"vm.state().typesContenu[0]\"\n                read-only=\"!vm.editing()\" ng-if=\"!vm.editing()\">\n      </markdown>\n  </div>\n\n</div>\n\n <div class=\"plusCommentaire\" ng-click=\"vm.plusCommentaire(vm.annotation.id)\"><img src=\"http://10.241.109.147/Decoupes/commentaire.png\" style=\"width:25px;height:25px;\"/></div>\n\n\n<div class=\"Commentaire{{vm.annotation.id}}\" style=\"display:none;\">\n\n  <div class=\"annotation-body form-field\">\n  <span class=\"title\" ng-if=\"vm.editing()\">{{'commentaire' | translate}} </span>\n  <section name=\"text\" class=\"annotation-body\">\n    <excerpt enabled=\"!vm.editing()\"\n      inline-controls=\"false\"\n      on-collapsible-changed=\"vm.setBodyCollapsible(collapsible)\"\n      collapse=\"vm.collapseBody\"\n      collapsed-height=\"100\"\n      overflow-hysteresis=\"20\"\n      content-data=\"vm.state().text\">\n      <markdown text=\"vm.state().text\"\n                custom-text-class=\"{'annotation-body is-hidden':vm.isHiddenByModerator(),\n                                    'has-content':vm.hasContent()}\"\n                on-edit-text=\"vm.setText(text)\"\n                read-only=\"!vm.editing()\">\n      </markdown>\n    </excerpt>\n  </section>\n</div>\n\n</div>\n\n</div>\n<!-- /information annotation -->\n  <!-- / Body -->\n \n\n  <footer class=\"annotation-footer\">\n    <div class=\"annotation-form-actions\" ng-if=\"vm.editing()\">\n      <publish-annotation-btn\n        class=\"publish-annotation-btn\"\n        group=\"vm.group()\"\n        can-post=\"true\"\n        is-shared=\"vm.isShared()\"\n        on-cancel=\"vm.revert()\"\n        on-save=\"vm.save()\"\n        on-set-privacy=\"vm.setPrivacy(level)\"></publish-annotation-btn>\n    </div>\n\n    <div class=\"annotation-section annotation-license\"\n         ng-show=\"vm.shouldShowLicense()\">\n      <a class=\"annotation-license__link\" href=\"http://creativecommons.org/publicdomain/zero/1.0/\"\n        title=\"Afficher plus d'informations sur la dédicace du domaine public Creative Commons\"\n        target=\"_blank\">\n        <i class=\"h-icon-cc-logo\"></i><i class=\"h-icon-cc-zero\"></i>\n        Les annotations peuvent être librement réutilisées par n'importe qui pour n'importe quel but.\n      </a>\n    </div>\n\n    <div class=\"annotation-replies\" ng-if=\"!vm.isReply() && vm.replyCount > 0\">\n      <a href=\"\"\n        ng-click=\"vm.onReplyCountClick()\">\n        <span class=\"annotation-replies__link\">{{ vm.isCollapsed ? 'Afficher les réponses' : 'Masquer les réponses' }}</span>\n        <span class=\"annotation-replies__count\">({{ vm.replyCount }})</span>\n      </a>\n    </div>\n\n    <div class=\"annotation-actions\" ng-if=\"vm.isSaving\">\n      {{'sauvegarde' | translate}}\n    </div>\n<!--height:454px;margin-top:-420px;-->\n    <div class=\"annotation-actions actions{{vm.annotation.id}}\" ng-if=\"!vm.isSaving && !vm.editing() && vm.id()\" style=\"opacity: 0.8;background-color:black;width:95%;padding-left: 16%;margin-top:-425px;margin-right:20px;display:none;\">\n      <div ng-show=\"vm.isSaving\">{{'sauvegarde' | translate}}</div>\n      <annotation-action-button\n        src=\"'http://10.241.109.147/Decoupes/Picto_modifier.png'\"\n        is-disabled=\"vm.isDeleted()\"\n        label=\"'modifier' | translate\"\n        ng-show=\"vm.authorize('update') && !vm.isSaving\"\n        on-click=\"vm.edit()\"\n      ></annotation-action-button>\n      <annotation-action-button\n        src=\"'http://10.241.109.147/Decoupes/Picto_Effacer.png'\"\n        is-disabled=\"vm.isDeleted()\"\n        label=\"'effacer' | translate\"\n        ng-show=\"vm.authorize('delete')\"\n        on-click=\"vm.delete()\"\n      ></annotation-action-button>\n      <!--<annotation-action-button\n        src=\"'http://10.241.109.147/Decoupes/Picto_Discuter.png'\"\n        is-disabled=\"vm.isDeleted()\"\n        label=\"'répondre' | translate\"\n        on-click=\"vm.reply()\"\n      ></annotation-action-button>-->\n      <span class=\"annotation-share-dialog-wrapper\" ng-if=\"vm.incontextLink()\">\n        <annotation-action-button\n         src=\"'http://10.241.109.147/Decoupes/Picto_Partager.png'\"\n         is-disabled=\"vm.isDeleted()\"\n         label=\"'partager' | translate\"\n         on-click=\"vm.showShareDialog = true\"\n        ></annotation-action-button>\n        <annotation-share-dialog\n          group=\"vm.group()\"\n          uri=\"vm.incontextLink()\"\n          is-private=\"vm.state().isPrivate\"\n          is-open=\"vm.showShareDialog\"\n          on-close=\"vm.showShareDialog = false\">\n        </annotation-share-dialog>\n      </span>\n      <span ng-if=\"vm.canFlag()\">\n        <annotation-action-button\n         icon=\"'h-icon-annotation-flag'\"\n         is-disabled=\"vm.isDeleted()\"\n         label=\"'Signaler cette annotation aux modérateurs'\"\n         ng-if=\"!vm.isFlagged()\"\n         on-click=\"vm.flag()\"\n        ></annotation-action-button>\n        <annotation-action-button\n         icon=\"'h-icon-annotation-flag annotation--flagged'\"\n         is-disabled=\"vm.isDeleted()\"\n         label=\"'L'annotation a été signalée aux modérateurs'\"\n         ng-if=\"vm.isFlagged()\"\n        ></annotation-action-button>\n      </span>\n    </div>\n  </footer>\n</div>\n";
+module.exports = "<header class=\"annotation-header\" ng-if=\"!vm.user()\">\n   <strong>{{'vous devez être connecté pour créer des annotations.' | translate}}</strong>  \n   <script src=\"./node_modules/angular-translate/dist/angular-translate.js\"></script>\n</header>\n<div ng-keydown=\"vm.onKeydown($event)\" class=\"all_annotation\" ng-if=\"vm.user()\">\n <div ng-click=\"vm.actions(vm.annotation.id)\" style=\"float:right;\">\n\t<img src=\"http://10.241.109.147/Decoupes/left-arrow.png\" style=\"width:25px;height:25px;\"/>\n</div>\n\n <annotation-header annotation=\"vm.annotation\" is-editing=\"vm.editing()\" is-highlight=\"vm.isHighlight()\" is-private=\"vm.state().isPrivate\" on-reply-count-click=\"vm.onReplyCountClick()\" reply-count=\"vm.replyCount\" show-document-info=\"vm.showDocumentInfo\">\n</annotation-header>\n\n   <!-- Body -->  \n   <div class=\"annotation-body form-field\">\n      <label for=\"title\" class=\"title\" ng-if=\"!vm.editing()\">{{'titre' | translate}} </label>      \n      <markdown text=\"vm.state().title\"\n                read-only=\"!vm.editing()\" ng-if=\"!vm.editing()\">\n      </markdown>\n      <label for=\"title\" class=\"title\" ng-if=\"vm.editing()\">{{'titre' | translate}}</label>  \n<input class=\"form-input\" type=\"text\" name=\"title\" ng-if=\"vm.editing()\" ng-model=\"title\" on-edit-text=\"vm.setTitle(title)\" ng-change=\"vm.setTitle(title)\" placeholder=\"{{vm.state().title || vm.getLastTitle()}}\" style=\"width:100%;\"/>\n   </div>\n\n   <!-- Tags -->  \n   <div class=\"annotation-body form-field\" ng-if=\"vm.editing()\">\n      <span class=\"title\">Tags </span>    \n      <tag-editor tags=\"vm.state().tags\" \n\t\t  on-edit-tags=\"vm.setTags(tags)\">\n      </tag-editor>\n   </div>\n   <div class=\"annotation-body u-layout-row tags tags-read-only\" ng-if=\"(vm.canCollapseBody || vm.state().tags.length) && !vm.editing()\">\n      <ul class=\"tag-list\">\n         <li class=\"tag-item\" ng-repeat=\"tag in vm.state().tags\">        \n\t\t<a ng-href=\"{{vm.tagSearchURL(tag)}}\" target=\"_blank\">{{tag}}</a>      \n\t</li>\n      </ul>\n\n   <div class=\"u-stretch\"></div>\n      <a class=\"annotation-link u-strong\" ng-show=\"vm.canCollapseBody\" ng-click=\"vm.toggleCollapseBody($event)\" ng-title=\"vm.collapseBody ? 'Show the full annotation text' : 'Show the first few lines only'\" ng-bind=\"vm.collapseBody ? 'More' : 'Less'\" h-branding=\"accentColor\">\n\t</a>  \n   </div>\n\n   <!-- / Tags --><!-- information annotation -->\n   <div style=\"margin-top:2px;\"></div>\n   <div class=\"plusInfo\" ng-click=\"vm.plusInfo(vm.annotation.id)\" style=\"float:right;\"><img src=\"http://10.241.109.147/Decoupes/points-512.png\" style=\"width:25px;height:25px;\"/></div>\n   <br>\n\n   <div class=\"infos{{vm.annotation.id}}\" style=\"display:none;\">\n      <span ng-if=\"!vm.state().text && !vm.state().complexite && !vm.state().fraicheur && vm.state().typesContenu.length==0  && !vm.state().rate && !vm.editing()\" style=\"color:red;\">{{\"pas d'informations sur cette annotation\" | translate}}</span>\n      <div style=\"display:inline-flex;\" ng-if=\"!vm.editing()\">\n         <div class=\"annotation-body form-field\">\n            <span class=\"title\" ng-if=\"vm.state().complexite || vm.editing()\">{{'complexite' | translate}}</span>      \n            <markdown text=\"vm.state().complexite\"\n                read-only=\"!vm.editing()\" ng-if=\"!vm.editing()\">\n      \t    </markdown>\n         </div>\n         <div class=\"annotation-body form-field\" style=\"margin-left:150px;\">\n            <span class=\"title\" ng-if=\"vm.state().fraicheur || vm.editing()\">{{'fraicheur' | translate}}</span>      \n            <markdown ng-if=\"!vm.editing()\" text=\"vm.state().fraicheur\"\n                read-only=\"!vm.editing()\" ng-if=\"!vm.editing()\">\n            </markdown>\n         </div>\n      </div>\n      <div style=\"display:inline-flex;\" ng-if=\"vm.editing()\">\n         <div class=\"annotation-body form-field\" style=\"margin-right:10px;\">\n            <span class=\"title\">{{'complexite' | translate}} </span>  \n            <select name=\"complexite\" ng-if=\"vm.editing()\" ng-model=\"complexite\" on-edit-text=\"vm.setComplexite(complexite)\"          ng-change=\"vm.setComplexite(complexite)\" class=\"form-control\">\n               <option value=\"\" disabled>{{'complexite' | translate}}</option>\n               <option ng-selected=\"{{vm.state().complexite == 'Acculturation'}}\" value=\"Acculturation\">Acculturation</option>\n               <option ng-selected=\"{{vm.state().complexite == 'Base'}}\" value=\"Base\">Base</option>\n               <option ng-selected=\"{{vm.state().complexite == 'Operationnel'}}\" value=\"Operationnel\">Opérationnel</option>\n               <option ng-selected=\"{{vm.state().complexite == 'Avance'}}\" value=\"Avance\">Avancé</option>\n            </select>\n         </div>\n         <div class=\"annotation-body form-field\">\n            <span class=\"title\">{{'fraicheur' | translate}} </span>\n            <select name=\"fraicheur\" ng-if=\"vm.editing()\" ng-model=\"fraicheur\" on-edit-text=\"vm.setFraicheur(fraicheur)\"          ng-change=\"vm.setFraicheur(fraicheur)\" class=\"form-control\" >\n               <option value=\"\" disabled>{{'fraicheur' | translate}}</option>\n               <option ng-selected=\"{{vm.state().fraicheur == 'Anticipation'}}\" value=\"Anticipation\">Anticipation</option>\n               <option ng-selected=\"{{vm.state().fraicheur == 'Actuel'}}\" value=\"Actuel\">Actuel</option>\n               <option ng-selected=\"{{vm.state().fraicheur == 'Pas à jour'}}\" value=\"Pas à jour\">Pas à jour</option>\n               <option ng-selected=\"{{vm.state().fraicheur == 'Obsolète'}}\" value=\"Obsolète\">Obsolète</option>\n            </select>\n         </div>\n      </div>\n      <div style=\"display:inline-flex;\">\n         <div class=\"annotation-body form-field\">\n            <span class=\"title\" ng-if=\"vm.state().rate || vm.editing()\">{{'interet' | translate}} </span> \n \n            <div id=\"id{{vm.annotation.id}}\" class=\"rating\" ng-if=\"!vm.editing() && vm.state().rate\"><span class=\"id{{vm.annotation.id}}rating5\">☆</span><span class=\"id{{vm.annotation.id}}rating4\">☆</span><span class=\"id{{vm.annotation.id}}rating3\">☆</span><span class=\"id{{vm.annotation.id}}rating2\">☆</span><span class=\"id{{vm.annotation.id}}rating1\">☆</span></div>\n\n            <div id=\"id{{vm.annotation.id}}\" class=\"rating\" ng-if=\"vm.editing()\"><span class=\"id{{vm.annotation.id}}rating5\" ng-click=\"vm.rating(5)\">☆</span><span class=\"id{{vm.annotation.id}}rating4\" ng-click=\"vm.rating(4)\">☆</span><span class=\"id{{vm.annotation.id}}rating3\" ng-click=\"vm.rating(3)\">☆</span><span class=\"id{{vm.annotation.id}}rating2\" ng-click=\"vm.rating(2)\">☆</span><span class=\"id{{vm.annotation.id}}rating1\" ng-click=\"vm.rating(1)\">☆</span>   </div>\n         </div>\n\n         <div class=\"annotation-body form-field\" ng-if=\"vm.editing()\" style=\"margin-left:70px;\">\n            <span class=\"title\">{{'type' | translate}} </span><br ng-if=\"vm.editing()\" />  \n            <select name=\"type\" ng-if=\"vm.editing()\" ng-model=\"typeContenu\" on-edit-text=\"vm.setTypesContenu(typeContenu)\"          ng-change=\"vm.setTypesContenu(typeContenu)\" class=\"form-control\">\n               <option value=\"\" disabled>{{'type' | translate}}</option>\n               <option ng-selected=\"{{vm.state().typesContenu[0] == 'Autoformation'}}\" value=\"Autoformation\">Autoformation</option>\n               <option ng-selected=\"{{vm.state().typesContenu[0] == 'Recommandation'}}\" value=\"Recommandation\">Recommandation</option>\n               <option ng-selected=\"{{vm.state().typesContenu[0] == 'Témoignages'}}\" value=\"Témoignages\">Témoignages</option>\n               <option ng-selected=\"{{vm.state().typesContenu[0] == 'Opinion'}}\" value=\"Opinion\">Opinion</option>\n               <option ng-selected=\"{{vm.state().typesContenu[0] == 'Information'}}\" value=\"Information\">Information</option>\n               <option ng-selected=\"{{vm.state().typesContenu[0] == 'Autre'}}\" value=\"Autre\">Autre</option>\n            </select>\n         </div>\n         <div class=\"annotation-body\" ng-if=\"(vm.canCollapseBody || vm.state().typesContenu.length) && !vm.editing()\" style=\"margin-left:124px;\">\n            <span class=\"title\">{{'type' | translate}} </span>      \n            <markdown text=\"vm.state().typesContenu[0]\" \n\t\t      read-only=\"!vm.editing()\" \n\t\t      ng-if=\"!vm.editing()\"> \n           </markdown>\n         </div>\n      </div>\n\n      <div class=\"plusCommentaire\" ng-click=\"vm.plusCommentaire(vm.annotation.id)\"><img src=\"http://10.241.109.147/Decoupes/commentaire.png\" style=\"width:25px;height:25px;\"/></div>\n      <div class=\"Commentaire{{vm.annotation.id}}\" style=\"display:none;\">\n         <div class=\"annotation-body form-field\">\n            <span class=\"title\" ng-if=\"vm.editing()\">{{'commentaire' | translate}} </span>  \n            <section name=\"text\" class=\"annotation-body\">\n               <excerpt enabled=\"!vm.editing()\"      \n\t\tinline-controls=\"false\"      \n\t\ton-collapsible-changed=\"vm.setBodyCollapsible(collapsible)\"      \n\t\tcollapse=\"vm.collapseBody\"      \n\t\tcollapsed-height=\"100\"      \n\t\toverflow-hysteresis=\"20\"      \n\t\tcontent-data=\"vm.state().text\">\n              <markdown text=\"vm.state().text\"                \n\t\tcustom-text-class=\"{'annotation-body is-hidden':vm.isHiddenByModerator(),'has-content':vm.hasContent()}\"                \n\t\ton-edit-text=\"vm.setText(text)\"                \n\t\tread-only=\"!vm.editing()\">\n             </markdown>\n               </excerpt>\n            </section>\n         </div>\n      </div>\n   </div>\n\n   <!-- /information annotation -->  <!-- / Body -->   \n   <footer class=\"annotation-footer\">\n      <div class=\"annotation-form-actions\" ng-if=\"vm.editing()\">\n\t<publish-annotation-btn        \n\t\tclass=\"publish-annotation-btn\"        \n\t\tgroup=\"vm.group()\"        \n\t\tcan-post=\"true\"        \n\t\tis-shared=\"vm.isShared()\"        \n\t\ton-cancel=\"vm.revert()\"        \n\t\ton-save=\"vm.save()\"        \n\t\ton-set-privacy=\"vm.setPrivacy(level)\">\n\t</publish-annotation-btn>\n      </div>\n\n      <div class=\"annotation-section annotation-license\" ng-show=\"vm.shouldShowLicense()\">      \n\t<a class=\"annotation-license__link\" href=\"http://creativecommons.org/publicdomain/zero/1.0/\" title=\"Afficher plus d'informations sur la dédicace du domaine public Creative Commons\" target=\"_blank\"><i class=\"h-icon-cc-logo\"></i><i class=\"h-icon-cc-zero\"></i>        \n\tLes annotations peuvent être librement réutilisées par n'importe qui pour n'importe quel but.</a>    \n\t</div>\n\n      <div class=\"annotation-replies\" ng-if=\"!vm.isReply() && vm.replyCount > 0\">      \n\t<a href=\"\" ng-click=\"vm.onReplyCountClick()\">        \n\t<span class=\"annotation-replies__link\">{{ vm.isCollapsed ? 'Afficher les réponses' : 'Masquer les réponses' }}</span>        \n\t<span class=\"annotation-replies__count\">({{ vm.replyCount }})</span>      \n\t</a>    \n      </div>\n\n      <div class=\"annotation-actions\" ng-if=\"vm.isSaving\"> {{'sauvegarde' | translate}}</div>\n      <!--height:454px;margin-top:-420px;-->  \n  \n      <div class=\"annotation-actions actions{{vm.annotation.id}}\" ng-if=\"!vm.isSaving && !vm.editing() && vm.id()\" style=\"opacity: 0.8;background-color:black;width:95%;padding-left: 16%;margin-top:-425px;margin-right:20px;display:none;\">\n\n         <div ng-show=\"vm.isSaving\">{{'sauvegarde' | translate}}</div>\n\n<annotation-action-button\n        src=\"'http://10.241.109.147/Decoupes/Picto_modifier.png'\"\n        is-disabled=\"vm.isDeleted()\"\n        label=\"'modifier' | translate\"\n        ng-show=\"vm.authorize('update') && !vm.isSaving\"\n        on-click=\"vm.edit()\">\n</annotation-action-button>\n<annotation-action-button\n        src=\"'http://10.241.109.147/Decoupes/Picto_Effacer.png'\"\n        is-disabled=\"vm.isDeleted()\"\n        label=\"'effacer' | translate\"\n        ng-show=\"vm.authorize('delete')\"\n        on-click=\"vm.delete()\">\n</annotation-action-button>\n<!--<annotation-action-button\n        src=\"'http://10.241.109.147/Decoupes/Picto_Discuter.png'\"\n        is-disabled=\"vm.isDeleted()\"\n        label=\"'répondre' | translate\"\n        on-click=\"vm.reply()\">\n</annotation-action-button>-->  \n\n<span class=\"annotation-share-dialog-wrapper\" ng-if=\"vm.incontextLink()\">\n<annotation-action-button\n         src=\"'http://10.241.109.147/Decoupes/Picto_Partager.png'\"\n         is-disabled=\"vm.isDeleted()\"\n         label=\"'partager' | translate\"\n         on-click=\"vm.showShareDialog = true\">\n</annotation-action-button>\n<annotation-share-dialog\n          group=\"vm.group()\"\n          uri=\"vm.incontextLink()\"\n          is-private=\"vm.state().isPrivate\"\n          is-open=\"vm.showShareDialog\"\n          on-close=\"vm.showShareDialog = false\">\n</annotation-share-dialog>\n</span>\n\n<span ng-if=\"vm.canFlag()\">\n<annotation-action-button\n         icon=\"'h-icon-annotation-flag'\"\n         is-disabled=\"vm.isDeleted()\"\n         label=\"'Signaler cette annotation aux modérateurs'\"\n         ng-if=\"!vm.isFlagged()\"\n         on-click=\"vm.flag()\">\n</annotation-action-button>\n<annotation-action-button\n         icon=\"'h-icon-annotation-flag annotation--flagged'\"\n         is-disabled=\"vm.isDeleted()\"\n         label=\"'L'annotation a été signalée aux modérateurs'\"\n         ng-if=\"vm.isFlagged()\">\n</annotation-action-button>\n</span>\n      </div>\n   </footer>\n</div>\n";
 
 },{}],141:[function(require,module,exports){
 module.exports = "<div class=\"dropdown-menu-btn\" >\n  <button\n    class=\"dropdown-menu-btn__btn\"\n    ng-bind=\"vm.label\"\n    ng-click=\"vm.onClick($event)\"\n    ng-disabled=\"vm.isDisabled\"\n    h-branding=\"ctaTextColor, ctaBackgroundColor\" style=\"background-color:green;\">\n  </button>\n  <button\n    class=\"dropdown-menu-btn__dropdown-arrow\"\n    style=\"background-color:green;\"\n    title=\"{{vm.dropdownMenuLabel}}\"\n    ng-click=\"vm.toggleDropdown($event)\">\n    <div class=\"dropdown-menu-btn__dropdown-arrow-separator\"></div>\n    <div\n      class=\"dropdown-menu-btn__dropdown-arrow-indicator\"\n      h-branding=\"ctaTextColor, ctaBackgroundColor\">\n      <div>▼</div>\n    </div>\n  </button>\n</div>\n";
@@ -19926,7 +19876,7 @@ module.exports = "<div class=\"dropdown-menu-btn\" >\n  <button\n    class=\"dro
 module.exports = "<div ng-transclude ng-if=\"!vm.enabled\"></div>\n<div class=\"excerpt__container\" ng-if=\"vm.enabled\">\n  <div class=\"excerpt\" ng-style=\"vm.contentStyle()\">\n    <div ng-transclude></div>\n    <div ng-click=\"vm.expand()\"\n         ng-class=\"vm.bottomShadowStyles()\"\n         title=\"Afficher l'extrait complet\"></div>\n    <div class=\"excerpt__inline-controls\"\n         ng-show=\"vm.showInlineControls()\">\n      <span class=\"excerpt__toggle-link\" ng-show=\"vm.isExpandable()\">\n        … <a ng-click=\"vm.toggle($event)\"\n            title=\"Afficher l'extrait complet\"\n            h-branding=\"accentColor, selectionFontFamily\">Plus</a>\n      </span>\n      <span class=\"excerpt__toggle-link\" ng-show=\"vm.isCollapsible()\">\n        <a ng-click=\"vm.toggle($event)\"\n            title=\"Afficher les premières lignes seulement\"\n            h-branding=\"accentColor, selectionFontFamily\">Moins</a>\n      </span>\n    </div>\n  </div>\n</div>\n";
 
 },{}],143:[function(require,module,exports){
-module.exports = "<span ng-if=\"vm.auth.status === 'logged-out'\"\n      ng-switch on=\"vm.groups.focused().public\">\n  <img class=\"group-list-label__icon group-list-label__icon--third-party\"\n    ng-src=\"{{ vm.thirdPartyGroupIcon }}\"\n    ng-if=\"vm.thirdPartyGroupIcon\"\n    ng-switch-when=\"true\"><!-- nospace\n  !--><i class=\"group-list-label__icon h-icon-public\"\n    ng-if=\"!vm.thirdPartyGroupIcon\"\n    ng-switch-when=\"true\"></i><!-- nospace\n  !--><i class=\"group-list-label__icon h-icon-group\" ng-switch-default></i>\n  <span class=\"group-list-label__label\">{{vm.groups.focused().name}}</span>\n</span>\n\n<div ng-click=\"vm.displayMenu()\"\n     class=\"pull-right\"\n     ng-if=\"vm.auth.status === 'logged-in'\"\n     dropdown\n     keyboard-nav>\n  <div class=\"dropdown-toggle\"\n        dropdown-toggle\n        data-toggle=\"dropdown\"\n        role=\"button\"\n        ng-switch on=\"vm.groups.focused().public\"\n        title=\"Changer le groupe sélectionné\">\n    <img class=\"group-list-label__icon group-list-label__icon--third-party\"\n         ng-src=\"{{ vm.thirdPartyGroupIcon }}\"\n         ng-if=\"vm.thirdPartyGroupIcon\"\n         ng-switch-when=\"true\"><!-- nospace\n    !--><i class=\"group-list-label__icon h-icon-public\"\n           ng-switch-when=\"true\"\n           ng-if=\"!vm.thirdPartyGroupIcon\"></i><!-- nospace\n    !--><i class=\"group-list-label__icon h-icon-group\"\n           ng-switch-default></i>\n    <span class=\"group-list-label__label\">{{vm.groups.focused().name}}</span><!-- nospace\n    !--><i class=\"h-icon-arrow-drop-down\"  style=\"color:#f57c13;\"></i>\n  </div>\n  <div class=\"dropdown-menu__top-arrow\"></div>\n  <ul class=\"dropdown-menu pull-none groupMenu\" role=\"menu\">\n    <li class=\"dropdown-menu__row dropdown-menu__row--unpadded \"\n        ng-repeat=\"group in vm.groups.all()\">\n      <div ng-class=\"{'group-item': true, selected: group.id == vm.groups.focused().id}\"\n           ng-click=\"vm.focusGroup(group.id)\">\n        <!-- the group icon !-->\n        <div class=\"group-icon-container\" ng-switch on=\"group.public\">\n          <img class=\"group-list-label__icon group-list-label__icon--third-party\"\n               ng-src=\"{{ vm.thirdPartyGroupIcon }}\"\n               ng-if=\"vm.thirdPartyGroupIcon\"\n               ng-switch-when=\"true\">\n          <i class=\"h-icon-public\" ng-if=\"!vm.thirdPartyGroupIcon\" ng-switch-when=\"true\"></i>\n          <i class=\"h-icon-group\" ng-switch-default></i>\n        </div>\n        <!-- the group name and share link !-->\n        <div class=\"group-details\">\n          <div class=\"group-name-container\">\n            <a class=\"group-name-link\"\n               href=\"\"\n               title=\"{{ group.public ? 'Afficher les annotations publiques' : 'Afficher et créer des annotations dans ' + group.name }}\">\n               {{group.name}}\n            </a>\n          </div>\n          <div class=\"share-link-container\" ng-click=\"$event.stopPropagation()\" ng-if=\"!group.public\">\n            <a class=\"share-link\"\n               href=\"{{group.url}}\"\n               target=\"_blank\"\n               ng-click=\"vm.viewGroupActivity()\">\n              Voir l'activité du groupe et inviter autres\n            </a>\n          </div>\n        </div>\n        <!-- the 'Leave group' icon !\n        <div class=\"group-cancel-icon-container\" ng-click=\"$event.stopPropagation()\">\n          <i class=\"h-icon-cancel-outline btn--cancel\"\n             ng-if=\"!group.public\"\n             ng-click=\"vm.leaveGroup(group.id)\"\n             title=\"Laisser '{{group.name}}'\"></i>\n        </div>-->\n      </div>\n    </li>\n   <!-- <li ng-if=\"!vm.isThirdPartyUser()\" class=\"dropdown-menu__row dropdown-menu__row--unpadded new-group-btn\">\n      <div class=\"group-item\" ng-click=\"vm.createNewGroup()\">\n        <div class=\"group-icon-container\"><i class=\"h-icon-add\"></i></div>\n        <div class=\"group-details\">\n          <a href=\"\" class=\"group-name-link\" title=\"Créer un nouveau groupe pour partager des annotations\">\n            Nouveau groupe\n          </a>\n        </div>\n      </div>\n    </li>-->\n  </ul>\n</div>\n";
+module.exports = "<span ng-if=\"vm.auth.status === 'logged-out'\"      ng-switch on=\"vm.groups.focused().public\">\n   <img class=\"group-list-label__icon group-list-label__icon--third-party\"    ng-src=\"{{ vm.thirdPartyGroupIcon }}\"    ng-if=\"vm.thirdPartyGroupIcon\"    ng-switch-when=\"true\"><!-- nospace  !--><i class=\"group-list-label__icon h-icon-public\"    ng-if=\"!vm.thirdPartyGroupIcon\"    ng-switch-when=\"true\"></i><!-- nospace  !--><i class=\"group-list-label__icon h-icon-group\" ng-switch-default></i>  <span class=\"group-list-label__label\">{{vm.groups.focused().name}}</span>\n</span>\n<div ng-click=\"vm.displayMenu()\"     class=\"pull-right\"     ng-if=\"vm.auth.status === 'logged-in'\"     dropdown     keyboard-nav>\n   <div class=\"dropdown-toggle\"        dropdown-toggle        data-toggle=\"dropdown\"        role=\"button\"        ng-switch on=\"vm.groups.focused().public\"        title=\"Changer le groupe sélectionné\">\n      <img class=\"group-list-label__icon group-list-label__icon--third-party\"         ng-src=\"{{ vm.thirdPartyGroupIcon }}\"         ng-if=\"vm.thirdPartyGroupIcon\"         ng-switch-when=\"true\"><!-- nospace    !--><i class=\"group-list-label__icon h-icon-public\"           ng-switch-when=\"true\"           ng-if=\"!vm.thirdPartyGroupIcon\"></i><!-- nospace    !--><i class=\"group-list-label__icon h-icon-group\"           ng-switch-default></i>    <span class=\"group-list-label__label\">{{vm.groups.focused().name}}</span><!-- nospace    !--><i class=\"h-icon-arrow-drop-down\"  style=\"color:#f57c13;\"></i>  \n   </div>\n   <div class=\"dropdown-menu__top-arrow\"></div>\n   <ul class=\"dropdown-menu pull-none groupMenu\" role=\"menu\">\n      <li class=\"dropdown-menu__row dropdown-menu__row--unpadded \"        ng-repeat=\"group in vm.groups.all()\">\n         <div ng-class=\"{'group-item': true, selected: group.id == vm.groups.focused().id}\"           ng-click=\"vm.focusGroup(group.id)\">\n            <!-- the group icon !-->        \n            <div class=\"group-icon-container\" ng-switch on=\"group.public\">          <img class=\"group-list-label__icon group-list-label__icon--third-party\"               ng-src=\"{{ vm.thirdPartyGroupIcon }}\"               ng-if=\"vm.thirdPartyGroupIcon\"               ng-switch-when=\"true\">          <i class=\"h-icon-public\" ng-if=\"!vm.thirdPartyGroupIcon\" ng-switch-when=\"true\"></i>          <i class=\"h-icon-group\" ng-switch-default></i>        </div>\n            <!-- the group name and share link !-->        \n            <div class=\"group-details\">\n               <div class=\"group-name-container\">            <a class=\"group-name-link\"               href=\"\"               title=\"{{ group.public ? 'Afficher les annotations publiques' : 'Afficher et créer des annotations dans ' + group.name }}\">               {{group.name}}            </a>          </div>\n               <div class=\"share-link-container\" ng-click=\"$event.stopPropagation()\" ng-if=\"!group.public\">            <a class=\"share-link\"               href=\"{{group.url}}\"               target=\"_blank\"               ng-click=\"vm.viewGroupActivity()\">              Voir l'activité du groupe et inviter autres            </a>          </div>\n            </div>\n            <!-- the 'Leave group' icon !        <div class=\"group-cancel-icon-container\" ng-click=\"$event.stopPropagation()\">          <i class=\"h-icon-cancel-outline btn--cancel\"             ng-if=\"!group.public\"             ng-click=\"vm.leaveGroup(group.id)\"             title=\"Laisser '{{group.name}}'\"></i>        </div>-->      \n         </div>\n      </li>\n      <!-- <li ng-if=\"!vm.isThirdPartyUser()\" class=\"dropdown-menu__row dropdown-menu__row--unpadded new-group-btn\">      <div class=\"group-item\" ng-click=\"vm.createNewGroup()\">        <div class=\"group-icon-container\"><i class=\"h-icon-add\"></i></div>        <div class=\"group-details\">          <a href=\"\" class=\"group-name-link\" title=\"Créer un nouveau groupe pour partager des annotations\">            Nouveau groupe          </a>        </div>      </div>    </li>-->  \n   </ul>\n</div>";
 
 },{}],144:[function(require,module,exports){
 module.exports = "\n<a class=\"help-panel-content__link\"\n   href=\"mailto:support@hypothes.is?subject=Hypothesis%20support&amp;body=Version:%20{{ vm.version }}%0D%0AUser%20Agent:%20{{vm.userAgent}}%0D%0AURL:%20{{ vm.url }}%0D%0APDF%20fingerprint:%20{{ vm.documentFingerprint ? vm.documentFingerprint : '-' }}%0D%0AUsername:%20{{ vm.auth.username ? vm.auth.username : '-' }}%0D%0ADate:%20{{ vm.dateTime | date:'dd MMM yyyy HH:mm:ss Z' }} \"\n>Envoyer un email</a>\n";
@@ -19941,7 +19891,7 @@ module.exports = "<div class=\"app-content-wrapper js-thread-list-scroll-root\" 
 module.exports = "<!-- message to display to loggedout users when they visit direct linked annotations -->\n<li class=\"loggedout-message\">\n  <span>\n    Ceci est une annotation publique créée avec Hypothesis.\n    <br>\n    Pour répondre ou faire vos propres annotations sur ce document,\n    <a class=\"loggedout-message__link\" href=\"{{vm.serviceUrl('signup')}}\" target=\"_blank\">créer un compte gratuit</a>\n    ou\n    <a class=\"loggedout-message__link\" href=\"\" ng-click=\"vm.onLogin()\">s'identifier</a>.\n  </span>\n  <span class=\"loggedout-message-logo\">\n    <a href=\"https://hypothes.is\">\n      <i class=\"h-icon-hypothesis-logo loggedout-message-logo__icon\"></i>\n    </a>\n  </span>\n</li>\n";
 
 },{}],148:[function(require,module,exports){
-module.exports = "<!-- New controls -->\n<span class=\"login-text\"\n      ng-if=\"vm.newStyle && vm.auth.status === 'unknown'\">⋯</span>\n<span class=\"login-text\"\n      ng-if=\"vm.newStyle && vm.auth.status === 'logged-out'\">\n  <a href=\"\" ng-click=\"vm.onLogin()\" h-branding=\"accentColor\">{{'se connecter' | translate}}</a> <!--\n/  <a href=\"\" ng-click=\"vm.onSignUp()\" target=\"_blanck\" h-branding=\"accentColor\">{{\"s'inscrire\" | translate}}</a>-->\n</span>\n<div ng-if=\"vm.newStyle\"\n     class=\"pull-right login-control-menu\"\n     dropdown\n     keyboard-nav>\n  <a role=\"button\"\n     class=\"top-bar__btn triggerButton\"\n     data-toggle=\"dropdown\"\n     dropdown-toggle>\n  </a>\n  <a ng-click=\"vm.displayMenu()\"\n     role=\"button\"\n     class=\"top-bar__btn\"\n     data-toggle=\"dropdown\"\n     dropdown-toggle\n     title=\"{{vm.auth.username}}\">\n    <i class=\"h-icon-account\" ng-if=\"vm.auth.status === 'logged-in'\"></i><!--\n    !--><i class=\"h-icon-arrow-drop-down top-bar__dropdown-arrow\"></i>\n  </a>\n  <ul class=\"dropdown-menu pull-right logMenu\" role=\"menu\">\n    <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\">\n      <span ng-if=\"!vm.shouldEnableProfileButton()\"\n            class=\"dropdown-menu__link dropdown-menu__link--disabled js-user-profile-btn is-disabled\">\n        {{vm.auth.displayName}}</span>\n      <a ng-if=\"vm.shouldEnableProfileButton()\"\n         ng-click=\"vm.showProfile()\"\n         class=\"dropdown-menu__link js-user-profile-btn is-enabled\"\n         title=\"Voir toutes vos annotations\"\n         target=\"_blank\">{{vm.auth.displayName}}</a>\n    </li>\n    <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in' && !vm.isThirdPartyUser()\">\n      <a class=\"dropdown-menu__link js-account-settings-btn\" href=\"{{vm.serviceUrl('account.settings')}}\" target=\"_blank\">{{'paramétres' | translate}}</a>\n    </li>\n    <li class=\"dropdown-menu__row\">\n      <a class=\"dropdown-menu__link js-help-btn\" ng-click=\"vm.onShowHelpPanel()\">{{'aide' | translate}}</a>\n    </li>\n    <li class=\"dropdown-menu__row\" ng-if=\"vm.shouldShowLogOutButton()\">\n      <a class=\"dropdown-menu__link dropdown-menu__link--subtle js-log-out-btn\"\n         href=\"\" ng-click=\"vm.onLogout()\">{{'se déconnecter' | translate}}</a>\n    </li>\n  </ul>\n</div>\n\n<!-- Old controls -->\n<span ng-if=\"!vm.newStyle && vm.auth.status === 'unknown'\">⋯</span>\n<span ng-if=\"!vm.newStyle && vm.auth.status === 'logged-out'\">\n  <a href=\"\" ng-click=\"vm.onLogin()\">{{'se connecter' | translate}}</a>\n</span>\n<div ng-if=\"!vm.newStyle\"\n     class=\"pull-right login-control-menu\"\n     dropdown\n     keyboard-nav>\n  <span role=\"button\" data-toggle=\"dropdown\" dropdown-toggle>\n    {{vm.auth.username}}<!--\n    --><span class=\"provider\"\n             ng-if=\"vm.auth.provider\">/{{vm.auth.provider}}</span><!--\n    --><i class=\"h-icon-arrow-drop-down\"></i>\n  </span>\n  <ul class=\"dropdown-menu pull-right\" role=\"menu\">\n    <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\">\n      <a class=\"dropdown-menu__link\" href=\"{{vm.serviceUrl('account.settings')}}\" target=\"_blank\">{{'compte' | translate}}</a>\n    </li>\n    <li class=\"dropdown-menu__row\" >\n      <a class=\"dropdown-menu__link\" ng-click=\"vm.onShowHelpPanel()\">{{'aide' | translate}}</a>\n    </li>\n    <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\">\n      <a class=\"dropdown-menu__link\" href=\"{{vm.serviceUrl('user',{user: vm.auth.username})}}\"\n         target=\"_blank\">{{'mes annotations' | translate}}</a>\n    </li>\n    <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\">\n      <a class=\"dropdown-menu__link\" href=\"\" ng-click=\"vm.onLogout()\">{{'se déconnecter' | translate}}</a>\n    </li>\n  </ul>\n</div>\n";
+module.exports = "<!-- New controls --><span class=\"login-text\"      ng-if=\"vm.newStyle && vm.auth.status === 'unknown'\">⋯</span>\n<span class=\"login-text\"      ng-if=\"vm.newStyle && vm.auth.status === 'logged-out'\">\n   <a href=\"\" ng-click=\"vm.onLogin()\" h-branding=\"accentColor\">{{'se connecter' | translate}}</a>\n   <!--/  <a href=\"\" ng-click=\"vm.onSignUp()\" target=\"_blanck\" h-branding=\"accentColor\">{{\"s'inscrire\" | translate}}</a>-->\n</span>\n<div ng-if=\"vm.newStyle\" class=\"pull-right login-control-menu\" dropdown keyboard-nav>\n   <a role=\"button\" class=\"top-bar__btn triggerButton\" data-toggle=\"dropdown\" dropdown-toggle></a>  \n   <a ng-click=\"vm.displayMenu()\" role=\"button\" class=\"top-bar__btn\" data-toggle=\"dropdown\" dropdown-toggle title=\"{{vm.auth.username}}\">\n      <i class=\"h-icon-account\" ng-if=\"vm.auth.status === 'logged-in'\"></i><i class=\"h-icon-arrow-drop-down top-bar__dropdown-arrow\"></i>  \n   </a>\n   <ul class=\"dropdown-menu pull-right logMenu\" role=\"menu\">\n      <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\">      \n      <span ng-if=\"!vm.shouldEnableProfileButton()\" class=\"dropdown-menu__link dropdown-menu__link--disabled js-user-profile-btn is-disabled\"> \n      {{vm.auth.displayName}}\n      </span>      \n      <a ng-if=\"vm.shouldEnableProfileButton()\" ng-click=\"vm.showProfile()\" class=\"dropdown-menu__link js-user-profile-btn is-enabled\" title=\"Voir toutes vos annotations\" target=\"_blank\">{{vm.auth.displayName}}</a>    </li>\n      <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in' && !vm.isThirdPartyUser()\"> \n        <a class=\"dropdown-menu__link js-account-settings-btn\" href=\"{{vm.serviceUrl('account.settings')}}\" target=\"_blank\">{{'paramétres' | translate}}</a>   \n      </li>\n      <li class=\"dropdown-menu__row\"> \n        <a class=\"dropdown-menu__link js-help-btn\" ng-click=\"vm.onShowHelpPanel()\">{{'aide' | translate}}</a>   \n      </li>\n      <li class=\"dropdown-menu__row\" ng-if=\"vm.shouldShowLogOutButton()\">  \n        <a class=\"dropdown-menu__link dropdown-menu__link--subtle js-log-out-btn\" href=\"\" ng-click=\"vm.onLogout()\">{{'se déconnecter' | translate}}</a>  \n      </li>\n   </ul>\n</div>\n<!-- Old controls -->\n<span ng-if=\"!vm.newStyle && vm.auth.status === 'unknown'\">⋯</span>\n<span ng-if=\"!vm.newStyle && vm.auth.status === 'logged-out'\">  \n  <a href=\"\" ng-click=\"vm.onLogin()\">{{'se connecter' | translate}}</a>\n</span>\n<div ng-if=\"!vm.newStyle\" class=\"pull-right login-control-menu\" dropdown  keyboard-nav>\n   <span role=\"button\" data-toggle=\"dropdown\" dropdown-toggle>\n      {{vm.auth.username}}<span class=\"provider\" ng-if=\"vm.auth.provider\">/{{vm.auth.provider}}</span><i class=\"h-icon-arrow-drop-down\"></i>  \n   </span>\n   <ul class=\"dropdown-menu pull-right\" role=\"menu\">\n      <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\">\n       <a class=\"dropdown-menu__link\" href=\"{{vm.serviceUrl('account.settings')}}\" target=\"_blank\">{{'compte' | translate}}</a> \n      </li>\n      <li class=\"dropdown-menu__row\" >      \n       <a class=\"dropdown-menu__link\" ng-click=\"vm.onShowHelpPanel()\">{{'aide' | translate}}</a>   \n      </li>\n      <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\"> \n       <a class=\"dropdown-menu__link\" href=\"{{vm.serviceUrl('user',{user: vm.auth.username})}}\" target=\"_blank\">{{'mes annotations' | translate}}</a>   \n      </li>\n      <li class=\"dropdown-menu__row\" ng-if=\"vm.auth.status === 'logged-in'\">   \n       <a class=\"dropdown-menu__link\" href=\"\" ng-click=\"vm.onLogout()\">{{'se déconnecter' | translate}}</a>   \n      </li>\n   </ul>\n</div>";
 
 },{}],149:[function(require,module,exports){
 module.exports = "<div ng-if=\"!vm.readOnly\" class=\"markdown-tools\" ng-class=\"vm.preview && 'disable'\">\n  <span class=\"markdown-preview-toggle\">\n    <a class=\"markdown-tools-badge h-icon-markdown\" href=\"https://help.github.com/articles/markdown-basics\" title=\"Analysé comme Markdown\" target=\"_blank\"></a>\n    <a href=\"\" class=\"markdown-tools-toggle\" ng-click=\"vm.togglePreview()\"\n      ng-show=\"!vm.preview\">Aperçu</a>\n    <a href=\"\" class=\"markdown-tools-toggle\" ng-click=\"vm.togglePreview()\"\n      ng-show=\"vm.preview\">Écrire</a>\n  </span>\n  <i class=\"h-icon-format-bold markdown-tools-button\" ng-click=\"vm.insertBold()\" title=\"Texte enhardi\"></i>\n  <i class=\"h-icon-format-italic markdown-tools-button\" ng-click=\"vm.insertItalic()\" title=\"Mettre en italique le texte\"></i>\n  <i class=\"h-icon-format-quote markdown-tools-button\" ng-click=\"vm.insertQuote()\" title=\"Texte de citation\"></i>\n  <i class=\"h-icon-insert-link markdown-tools-button\" ng-click=\"vm.insertLink()\" title=\"Insérer un lien\"></i>\n  <i class=\"h-icon-insert-photo markdown-tools-button\" ng-click=\"vm.insertIMG()\" title=\"Insérer une image\"></i>\n  <i class=\"h-icon-functions markdown-tools-button\" ng-click=\"vm.insertMath()\" title=\"Insérer une notation mathématique (LaTex est supporté)\"></i>\n  <i class=\"h-icon-format-list-numbered markdown-tools-button\" ng-click=\"vm.insertNumList()\" title=\"Insérer une liste numérotée\"></i>\n  <i class=\"h-icon-format-list-bulleted markdown-tools-button\" ng-click=\"vm.insertList()\" title=\"Insérer une liste\"></i>\n</div>\n<textarea class=\"form-input js-markdown-input\"\n          ng-show=\"vm.showEditor()\"\n          ng-click=\"$event.stopPropagation()\"\n          h-branding=\"annotationFontFamily\"></textarea>\n<div class=\"markdown-body js-markdown-preview\"\n     ng-class=\"(vm.preview && 'markdown-preview') || vm.customTextClass\"\n     ng-dblclick=\"vm.togglePreview()\"\n     ng-show=\"!vm.showEditor()\"\n     h-branding=\"annotationFontFamily\"></div>\n";
@@ -19953,7 +19903,7 @@ module.exports = "<div class=\"moderation-banner\"\n     ng-if=\"vm.isHiddenOrFl
 module.exports = "<button class=\"new-note__create\" ng-click=\"vm.onNewNoteBtnClick()\" h-branding=\"ctaBackgroundColor\">\n  + Nouvelle note\n</button>\n";
 
 },{}],152:[function(require,module,exports){
-module.exports = "<div dropdown=\"\" class=\"publish-annotation-btn\"  is-open=\"vm.showDropdown\" keyboard-nav>\n  <dropdown-menu-btn\n    label=\"'poster à' | translate\"\n    on-click=\"vm.onSave()\"\n    on-toggle-dropdown=\"vm.showDropdown = !vm.showDropdown\"\n    title=\"Publiez cette annotation sur {{vm.publishDestination()}}\"\n    dropdown-menu-label=\"Change annotation sharing setting\"\n    is-disabled=\"!vm.canPost\">\n  </dropdown-menu-btn>\n  <div class=\"publish-annotation-btn__dropdown-container\">\n    <ul class=\"dropdown-menu pull-center publishMenu group-list publish-annotation-btn__dropdown-menu\" role=\"menu\">\n      <li class=\"dropdown-menu__row\" ng-click=\"vm.setPrivacy('shared')\">\n        <div class=\"group-item\">\n          <div class=\"group-icon-container\">\n            <i class=\"small\" ng-class=\"'h-icon-' + vm.groupType()\"></i>\n          </div>\n          <div class=\"group-details\">\n            <div class=\"group-name-container\">\n              <a href=\"\" class=\"group-name-link\" ng-bind=\"vm.group.name\"></a>\n            </div>\n          </div>\n        </div>\n      </li>\n     <!-- <li class=\"dropdown-menu__row\" ng-click=\"vm.setPrivacy('private')\">\n        <div class=\"group-item\">\n          <div class=\"group-icon-container\">\n            <i class=\"small h-icon-lock\"></i>\n          </div>\n          <div class=\"group-details\">\n            <div class=\"group-name-container\">\n              <a href=\"\" class=\"group-name-link\" ng-bind=\"vm.privateLabel | translate\"></a>\n            </div>\n          </div>\n        </div>\n      </li> -->\n    </ul>\n  </div>\n</div>\n<button class=\"publish-annotation-cancel-btn\" style=\"color:white;background-color:red;border:0;\"\n        ng-click=\"vm.onCancel()\"\n        title=\"Annuler les modifications apportées à cette annotation\"\n        >\n  <i class=\"h-icon-cancel-outline publish-annotation-cancel-btn__icon btn-icon\"></i> {{'annuler' | translate}}\n</button>\n";
+module.exports = "<div dropdown=\"\" class=\"publish-annotation-btn\"  is-open=\"vm.showDropdown\" keyboard-nav>\n   <dropdown-menu-btn    label=\"'poster à' | translate\"  on-click=\"vm.onSave()\" on-toggle-dropdown=\"vm.showDropdown = !vm.showDropdown\"  title=\"Publiez cette annotation sur {{vm.publishDestination()}}\" dropdown-menu-label=\"Change annotation sharing setting\" is-disabled=\"!vm.canPost\">  \n   </dropdown-menu-btn>\n   <div class=\"publish-annotation-btn__dropdown-container\">\n      <ul class=\"dropdown-menu pull-center publishMenu group-list publish-annotation-btn__dropdown-menu\" role=\"menu\">\n         <li class=\"dropdown-menu__row\" ng-click=\"vm.setPrivacy('shared')\">\n            <div class=\"group-item\">\n              <div class=\"group-icon-container\">           \n                <i class=\"small\" ng-class=\"'h-icon-' + vm.groupType()\"></i>     \n              </div>\n              <div class=\"group-details\">\n              <div class=\"group-name-container\">          \n                <a href=\"\" class=\"group-name-link\" ng-bind=\"vm.group.name\"></a>         \n              </div>\n               </div>\n            </div>\n         </li>\n         <!-- <li class=\"dropdown-menu__row\" ng-click=\"vm.setPrivacy('private')\"> <div class=\"group-item\"><div class=\"group-icon-container\"><i class=\"small h-icon-lock\"></i></div><div class=\"group-details\"><div class=\"group-name-container\"> <a href=\"\" class=\"group-name-link\" ng-bind=\"vm.privateLabel | translate\"></a></div></div> </div></li> -->    \n      </ul>\n   </div>\n</div>\n<button class=\"publish-annotation-cancel-btn\" style=\"color:white;background-color:red;border:0;\" ng-click=\"vm.onCancel()\" title=\"Annuler les modifications apportées à cette annotation\"        >\n  <i class=\"h-icon-cancel-outline publish-annotation-cancel-btn__icon btn-icon\"></i> {{'annuler' | translate}}\n</button>";
 
 },{}],153:[function(require,module,exports){
 module.exports = "<form class=\"simple-search-form\"\n      name=\"searchForm\"\n      ng-class=\"!vm.query && 'simple-search-inactive'\">\n  <input class=\"simple-search-input\"\n         type=\"text\"\n         name=\"query\"\n         placeholder=\"{{vm.loading && 'Chargement' || 'chercher' | translate}}…\"\n         ng-disabled=\"vm.loading\"\n         ng-class=\"vm.inputClasses()\"/>\n  <button type=\"button\" class=\"simple-search-icon top-bar__btn\" ng-hide=\"vm.loading\">\n    <i class=\"h-icon-search\"></i>\n  </button>\n  <button type=\"button\" class=\"simple-search-icon btn btn-clean\" ng-show=\"vm.loading\" disabled>\n    <span class=\"btn-icon\"><span class=\"spinner\"></span></span>\n  </button>\n\n</form>\n";
@@ -19974,7 +19924,7 @@ module.exports = "<selection-tabs\n  ng-if=\"!vm.search.query() && vm.selectedAn
 module.exports = "<div class=\"sheet\" ng-if=\"vm.showSidebarTutorial() &&  !vm.isThemeClean\">\n  <i class=\"close h-icon-close\" role=\"button\" title=\"Fermer\"\n     ng-click=\"vm.dismiss()\"></i>\n  <h1 class=\"sidebar-tutorial__header\">Comment commencer</h1>\n  <ol class=\"sidebar-tutorial__list\">\n    <li class=\"sidebar-tutorial__list-item\">\n      <p class=\"sidebar-tutorial__list-item-content\">\n        Pour créer une annotation, sélectionnez un texte et cliquez sur\n        <i class=\"h-icon-annotate\"></i>&nbsp;bouton.\n      </p>\n    </li>\n    <li class=\"sidebar-tutorial__list-item\">\n      <p class=\"sidebar-tutorial__list-item-content\">\n        Pour ajouter une note à la page que vous consultez, cliquez sur\n        <i class=\"h-icon-note\"></i>&nbsp;bouton.\n      </p>\n    </li>\n    <li class=\"sidebar-tutorial__list-item\">\n      <p class=\"sidebar-tutorial__list-item-content\">\n        Pour créer une surbrillance, sélectionnez un texte et cliquez sur \n        <i class=\"h-icon-highlight\"></i>&nbsp;button.\n      </p>\n    </li>\n    <li class=\"sidebar-tutorial__list-item\">\n      <p class=\"sidebar-tutorial__list-item-content\">\n        Pour répondre à une annotation, cliquez sur le\n        <i class=\"h-icon-annotation-reply\"></i>&nbsp;<strong>Répondre</strong>&nbsp;lien.\n      </p>\n    </li>\n    <li class=\"sidebar-tutorial__list-item\">\n      <p class=\"sidebar-tutorial__list-item-content\">\n        Pour partager une page annotée, cliquez sur\n        <i class=\"h-icon-annotation-share\"></i>&nbsp;bouton en haut.\n      </p>\n    </li>\n    <li class=\"sidebar-tutorial__list-item\">\n      <p class=\"sidebar-tutorial__list-item-content\">\n        Pour créer un groupe privé, sélectionnez <strong>Publique</strong>,\n        ouvrez la liste déroulante, cliquez sur&nbsp;<strong>+&nbsp;Nouveau&nbsp;groupe</strong>.\n      </p>\n    </li>\n  </ol>\n</div>\n<div class=\"sheet sheet--is-theme-clean\" ng-if=\"vm.showSidebarTutorial() && vm.isThemeClean\">\n  <i class=\"close h-icon-close\" role=\"button\" title=\"Fermer\"\n     ng-click=\"vm.dismiss()\"></i>\n  <h1 class=\"sidebar-tutorial__header sidebar-tutorial__header--is-theme-clean\">\n    <i class=\"h-icon-annotate sidebar-tutorial__header-annotate\" h-branding=\"accentColor\"></i>\n    Commencer à annoter\n  </h1>\n  <ol class=\"sidebar-tutorial__list\">\n    <li class=\"sidebar-tutorial__list-item sidebar-tutorial__list-item--is-theme-clean\">\n      <div class=\"sidebar-tutorial__list-item-content\">\n        Sélectionnez un texte à\n          <span class=\"sidebar-tutorial__list-item-annotate\">annotater</span>\n          <svg-icon class=\"sidebar-tutorial__list-item-cursor\" name=\"'cursor'\"></svg-icon>\n        ou surligner.\n      </div>\n    </li>\n    <li class=\"sidebar-tutorial__list-item sidebar-tutorial__list-item--is-theme-clean\">\n      <div class=\"sidebar-tutorial__list-item-content sidebar-tutorial__list-item-content--is-theme-clean\">\n        Créer des notes au niveau de la page\n        <span class=\"sidebar-tutorial__list-item-new-note-btn\" h-branding=\"ctaBackgroundColor\">\n          + Nouvelle note\n        </span>\n      </div>\n    </li>\n    <li class=\"sidebar-tutorial__list-item sidebar-tutorial__list-item--is-theme-clean\">\n      <div class=\"sidebar-tutorial__list-item-content\">\n        Afficher les annotations dans votre profil\n        <i class=\"h-icon-account sidebar-tutorial__list-item-profile\"></i>\n        <i class=\"h-icon-arrow-drop-down sidebar-tutorial__list-item-drop-down\"></i>\n      </div>\n    </li>\n  </ol>\n</div>\n";
 
 },{}],159:[function(require,module,exports){
-module.exports = "<span dropdown keyboard-nav>\n  <button\n    ng-click=\"vm.displayMenu()\"\n    type=\"button\"\n    class=\"top-bar__btn\"\n    dropdown-toggle\n    title=\"Trier par {{vm.sortKey}}\">\n    <i class=\"h-icon-sort\"></i>\n  </button>\n  <div class=\"dropdown-menu__top-arrow\"></div>\n  <ul class=\"dropdown-menu pull-right sortMenu\" role=\"menu\">\n    <li class=\"dropdown-menu__row\"\n        ng-repeat=\"key in vm.sortKeysAvailable\"\n        ng-click=\"vm.onChangeSortKey({sortKey: key})\"\n        ><span class=\"dropdown-menu-radio\"\n               ng-class=\"{'is-selected' : vm.sortKey === key}\"\n        ></span><a class=\"dropdown-menu__link\" href=\"\">{{key | translate}}</a></li>\n  </ul>\n</span>\n";
+module.exports = "<span dropdown keyboard-nav>\n  <button ng-click=\"vm.displayMenu()\" type=\"button\" class=\"top-bar__btn\" dropdown-toggle title=\"Trier par {{vm.sortKey}}\">   \n    <i class=\"h-icon-sort\"></i>  \n  </button>  \n   <div class=\"dropdown-menu__top-arrow\"></div>\n   <ul class=\"dropdown-menu pull-right sortMenu\" role=\"menu\">\n      <li class=\"dropdown-menu__row\" ng-repeat=\"key in vm.sortKeysAvailable\" ng-click=\"vm.onChangeSortKey({sortKey: key})\" >\n        <span class=\"dropdown-menu-radio\" ng-class=\"{'is-selected' : vm.sortKey === key}\" ></span>\n        <a class=\"dropdown-menu__link\" href=\"\">{{key | translate}}</a>\n      </li>\n   </ul>\n</span>\n";
 
 },{}],160:[function(require,module,exports){
 module.exports = "<span window-scroll=\"vm.loadMore(20)\">\n  <thread-list\n    on-change-collapsed=\"vm.setCollapsed(id, collapsed)\"\n    on-force-visible=\"vm.forceVisible(thread)\"\n    show-document-info=\"true\"\n    thread=\"vm.rootThread\">\n  </thread-list>\n</span>\n";
@@ -20732,9 +20682,6 @@ var OAuthClient = function () {
 
     this.$http = $http;
     this.clientId = '65f447f6-22f1-11e8-b7ea-3b8fad378121';
-    //this.clientId='a744a0f8-2223-11e8-8593-7f19ecf4815e';
-    //this.clientId='f7c7d376-3725-11e8-9f78-d72cbae30d49';
-    //this.clientId='13516846-22f9-11e8-a17a-3b1e3d4f317d';
     this.tokenEndpoint = config.tokenEndpoint;
     this.authorizationEndpoint = config.authorizationEndpoint;
     this.revokeEndpoint = config.revokeEndpoint;

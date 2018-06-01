@@ -211,9 +211,6 @@ svg {
     width: 56px;
     height: 48px; }
 
-.annotator-frame .annotator-bucket-indicator {
-  display: none; }
-
 .u-stretch {
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
@@ -325,9 +322,6 @@ svg {
     background-repeat: no-repeat;
     width: 56px;
     height: 48px; }
-
-.annotator-frame .annotator-bucket-indicator {
-  display: none; }
 
 .form-field {
   clear: both;
@@ -1986,9 +1980,6 @@ li:first-child .annotation-thread--top-reply {
     width: 56px;
     height: 48px; }
 
-.annotator-frame .annotator-bucket-indicator {
-  display: none; }
-
 .simple-search-form {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -2206,9 +2197,6 @@ li:first-child .annotation-thread--top-reply {
     background-repeat: no-repeat;
     width: 56px;
     height: 48px; }
-
-.annotator-frame .annotator-bucket-indicator {
-  display: none; }
 
 tags-input .host {
   outline: none; }
@@ -2541,9 +2529,6 @@ tags-input .autocomplete {
     background-repeat: no-repeat;
     width: 56px;
     height: 48px; }
-
-.annotator-frame .annotator-bucket-indicator {
-  display: none; }
 
 .top-bar {
   background: #000;
