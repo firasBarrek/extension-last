@@ -1,0 +1,17 @@
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/install.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/tab-store.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/direct-link-query.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/settings.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/browser-action.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/errors.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/browser-name.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/help-page.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/detect-content-type.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/util.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/uri-info.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/tab-state.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/sidebar-injector.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/hypothesis-chrome-extension.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/raven.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/polyfills.js
+build/extension.bundle.js: /home/firas/Desktop/Hypothesis/browser-extension/src/common/extension.js
