@@ -20190,7 +20190,7 @@ function $RootScopeProvider() {
                 TTL, watchLog);
           }
 
-        } while (dirty || asyncQueue.length);
+        } while (dirty);
 
         clearPhase();
 
